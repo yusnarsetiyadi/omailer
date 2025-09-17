@@ -1,6 +1,7 @@
 package omailer
 
 import (
+	"mime/multipart"
 	"net/http"
 	"omailer/internal/abstraction"
 	"omailer/internal/dto"
@@ -30,7 +31,11 @@ func (h *handler) OmailerSend(c echo.Context) (err error) {
 	if err := c.Request().ParseMultipartForm(64 << 20); err != nil {
 		return response.ErrorBuilder(http.StatusBadRequest, err, "error bind multipart/form-data").SendError(c)
 	}
-	payload.Files = c.Request().MultipartForm.File["files"]
+	files := []*multipart.FileHeader{}
+	for _, fhs := range c.Request().MultipartForm.File {
+		files = append(files, fhs...)
+	}
+	payload.Files = files
 	data, err := h.service.OmailerSend(c.(*abstraction.Context), payload)
 	if err != nil {
 		return response.ErrorResponse(err).SendError(c)

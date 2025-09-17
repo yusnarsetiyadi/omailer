@@ -30,6 +30,9 @@ func (c *ConfigMailer) SendMail(recipient, subject, bodyHtml string, files []*mu
 	mailer.SetBody("text/plain", general.ParseTemplateEmailToPlainText(bodyHtml))
 	mailer.AddAlternative("text/html", bodyHtml)
 
+	if len(files) == 0 {
+		logrus.Warn("No files uploaded")
+	}
 	for _, fileHeader := range files {
 		file, err := fileHeader.Open()
 		if err != nil {

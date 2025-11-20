@@ -6,4 +6,5 @@ import (
 
 func (h *handler) Route(v *echo.Group) {
 	v.POST("", h.OmailerSend)
+	v.GET("/just-message", h.OmailerSendJustMessage)
 }

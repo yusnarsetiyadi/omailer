@@ -16,3 +16,8 @@ type OmailerSend struct {
 	BodyHtml  string `json:"body_html" form:"body_html" validate:"required"`
 	Files     []*multipart.FileHeader
 }
+
+type OmailerSendJustMessage struct {
+	// json encode
+	Data string `query:"data"`
+}

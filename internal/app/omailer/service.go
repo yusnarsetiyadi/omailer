@@ -7,7 +7,6 @@ import (
 	"omailer/internal/abstraction"
 	"omailer/internal/dto"
 	"omailer/pkg/constant"
-	"omailer/pkg/general"
 	"omailer/pkg/gomail"
 	"omailer/pkg/util/response"
 	"strconv"
@@ -62,24 +61,13 @@ func (s *service) OmailerSend(ctx *abstraction.Context, payload *dto.OmailerSend
 
 func (s *service) OmailerSendJustMessage(ctx *abstraction.Context, payload *dto.OmailerSendJustMessage) (map[string]interface{}, error) {
 
-	key := "15042003150420031504200315042003"
-	cleanData, err := url.QueryUnescape(payload.Data)
+	decoded, err := url.QueryUnescape(payload.Data)
 	if err != nil {
-		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error unescape")
-	}
-
-	decodedAES, err := general.DecryptAES(cleanData, key)
-	if err != nil {
-		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decrypt aes")
-	}
-
-	jsonText, err := url.QueryUnescape(decodedAES)
-	if err != nil {
-		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error unescape inner json")
+		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decode url encode json")
 	}
 
 	var cfg MailConfig
-	if err := json.Unmarshal([]byte(jsonText), &cfg); err != nil {
+	if err := json.Unmarshal([]byte(decoded), &cfg); err != nil {
 		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "failed to unmarshal json data")
 	}
 

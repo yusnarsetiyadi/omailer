@@ -63,18 +63,23 @@ func (s *service) OmailerSend(ctx *abstraction.Context, payload *dto.OmailerSend
 func (s *service) OmailerSendJustMessage(ctx *abstraction.Context, payload *dto.OmailerSendJustMessage) (map[string]interface{}, error) {
 
 	key := "15042003150420031504200315042003"
-	dataUrlEnc, err := general.DecryptAES(payload.Data, key)
+	cleanData, err := url.QueryUnescape(payload.Data)
 	if err != nil {
-		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decode url encode json")
+		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error unescape")
 	}
 
-	decoded, err := url.QueryUnescape(dataUrlEnc)
+	decodedAES, err := general.DecryptAES(cleanData, key)
 	if err != nil {
-		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decode url encode json")
+		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decrypt aes")
+	}
+
+	jsonText, err := url.QueryUnescape(decodedAES)
+	if err != nil {
+		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error unescape inner json")
 	}
 
 	var cfg MailConfig
-	if err := json.Unmarshal([]byte(decoded), &cfg); err != nil {
+	if err := json.Unmarshal([]byte(jsonText), &cfg); err != nil {
 		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "failed to unmarshal json data")
 	}
 

@@ -2,6 +2,9 @@ package general
 
 import (
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
 	"regexp"
 	"strings"
 
@@ -44,4 +47,34 @@ func ParseTemplateEmailToPlainText(htmlStr string) string {
 	output := buf.String()
 	output = regexp.MustCompile(`\n\s*\n`).ReplaceAllString(output, "\n\n")
 	return strings.TrimSpace(output)
+}
+
+func DecryptAES(cipherText string, key string) (string, error) {
+	keyBytes := []byte(key)
+
+	data, err := base64.StdEncoding.DecodeString(cipherText)
+	if err != nil {
+		return "", err
+	}
+
+	block, err := aes.NewCipher(keyBytes)
+	if err != nil {
+		return "", err
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	nonceSize := gcm.NonceSize()
+	nonce := data[:nonceSize]
+	cipherBytes := data[nonceSize:]
+
+	plainText, err := gcm.Open(nil, nonce, cipherBytes, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(plainText), nil
 }

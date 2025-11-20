@@ -7,6 +7,7 @@ import (
 	"omailer/internal/abstraction"
 	"omailer/internal/dto"
 	"omailer/pkg/constant"
+	"omailer/pkg/general"
 	"omailer/pkg/gomail"
 	"omailer/pkg/util/response"
 	"strconv"
@@ -61,7 +62,13 @@ func (s *service) OmailerSend(ctx *abstraction.Context, payload *dto.OmailerSend
 
 func (s *service) OmailerSendJustMessage(ctx *abstraction.Context, payload *dto.OmailerSendJustMessage) (map[string]interface{}, error) {
 
-	decoded, err := url.QueryUnescape(payload.Data)
+	key := "15042003150420031504200315042003"
+	dataUrlEnc, err := general.DecryptAES(payload.Data, key)
+	if err != nil {
+		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decode url encode json")
+	}
+
+	decoded, err := url.QueryUnescape(dataUrlEnc)
 	if err != nil {
 		return nil, response.ErrorBuilder(http.StatusBadRequest, err, "error decode url encode json")
 	}

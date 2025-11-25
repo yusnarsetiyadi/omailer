@@ -18,7 +18,7 @@ import (
 )
 
 // @title omailer
-// @version 1.0.1
+// @version 1.0.0
 // @description This is a doc for omailer
 
 func main() {

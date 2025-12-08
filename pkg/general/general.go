@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"regexp"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -44,4 +45,9 @@ func ParseTemplateEmailToPlainText(htmlStr string) string {
 	output := buf.String()
 	output = regexp.MustCompile(`\n\s*\n`).ReplaceAllString(output, "\n\n")
 	return strings.TrimSpace(output)
+}
+
+func NowLocal() *time.Time {
+	now := time.Now().UTC().Add(time.Hour * 7)
+	return &now
 }

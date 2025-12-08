@@ -5,6 +5,7 @@ import (
 	"net/http"
 	httpomailer "omailer/internal/http"
 	middlewareEcho "omailer/internal/middleware"
+	"omailer/internal/scheduler"
 	"omailer/pkg/constant"
 	"omailer/pkg/log"
 	"os"
@@ -37,6 +38,8 @@ func main() {
 
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	scheduler.InitScheduler()
 
 	go func() {
 		addr := ":" + strconv.Itoa(constant.PORT)

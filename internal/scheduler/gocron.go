@@ -90,6 +90,11 @@ func WaitUntilWAReadyThenRun(name string, fn func()) {
 	}()
 }
 
+func AutomatedMessage(mainText string) string {
+	footer := "_Automated message.\nCoffee keeps this running ☕_"
+	return mainText + "\n\n\n" + footer
+}
+
 func TestGoCron() {
 	// test send message to me
 	logrus.Info("test send message")
@@ -97,7 +102,7 @@ func TestGoCron() {
 	err := whatsapp.SendText(
 		context.Background(),
 		"6281398447822",
-		"Cron Test: Hello from WhatsMeow!",
+		AutomatedMessage("Cron Test: Hello from WhatsMeow!"),
 	)
 
 	if err != nil {
@@ -112,7 +117,7 @@ func AttendanceIn() {
 	err := whatsapp.SendText(
 		context.Background(),
 		"grup masjid lt 20",
-		"Pagi mas/mba semua, JANGAN LUPA ABSEN MASUK YA PAGI INI!",
+		AutomatedMessage("Haloo mas/mba semua, JANGAN LUPA ABSEN MASUK YA PAGI INI. Terima kasih!"),
 	)
 
 	if err != nil {
@@ -129,13 +134,13 @@ func AttendanceOut(isNight bool) {
 		err = whatsapp.SendText(
 			context.Background(),
 			"grup masjid lt 20",
-			"JANGAN LUPA ABSEN KELUAR GES, UDAH MALEM. Terima kasih!",
+			AutomatedMessage("JANGAN LUPA ABSEN KELUAR YA GES, UDAH MALEM. Terima kasih!"),
 		)
 	} else {
 		err = whatsapp.SendText(
 			context.Background(),
 			"grup masjid lt 20",
-			"JANGAN LUPA ABSEN KELUAR GES, UDAH SORE. Terima kasih!",
+			AutomatedMessage("JANGAN LUPA ABSEN KELUAR YA GES, UDAH SORE. Terima kasih!"),
 		)
 	}
 

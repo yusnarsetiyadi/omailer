@@ -8,6 +8,7 @@ import (
 	"omailer/internal/scheduler"
 	"omailer/pkg/constant"
 	"omailer/pkg/log"
+	"omailer/pkg/whatsapp"
 	"os"
 	"os/signal"
 	"strconv"
@@ -39,6 +40,10 @@ func main() {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// whatsapp & scheduler
+	if err := whatsapp.Init(); err != nil {
+		logrus.Fatalf("Failed to init WhatsApp client: %v", err)
+	}
 	scheduler.InitScheduler()
 
 	go func() {
@@ -52,6 +57,8 @@ func main() {
 	}()
 
 	<-ch
+
+	whatsapp.Close()
 
 	logrus.Println("Shutting down server...")
 	cancel()

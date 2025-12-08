@@ -1,7 +1,9 @@
 package scheduler
 
 import (
+	"context"
 	"omailer/pkg/general"
+	"omailer/pkg/whatsapp"
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
@@ -19,7 +21,7 @@ func InitScheduler() {
 		logrus.Errorln(err.Error())
 	}
 
-	TestGoCron()
+	go WaitUntilWAReadyThenRun("TestGoCron", TestGoCron)
 
 	_, err = scheduler.NewJob(
 		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(8, 0, 0))),
@@ -63,17 +65,64 @@ func AttendanceOutWrapper() {
 	AttendanceOut()
 }
 
+func WaitUntilWAReadyThenRun(name string, fn func()) {
+	go func() {
+		logrus.Infof("Waiting WhatsApp ready before running %s...", name)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
+		defer cancel()
+
+		if err := whatsapp.WaitUntilReady(ctx); err != nil {
+			logrus.Errorf("Failed waiting WA ready for %s: %v", name, err)
+			return
+		}
+
+		logrus.Infof("WhatsApp ready → running %s", name)
+		fn()
+	}()
+}
+
 func TestGoCron() {
 	// test send message to me
-	logrus.Info("test send message to me")
+	logrus.Info("test send message")
+
+	err := whatsapp.SendText(
+		context.Background(),
+		"grup masjid lt 20",
+		"Cron Test: Hello from WhatsMeow!",
+	)
+
+	if err != nil {
+		logrus.Error("Gagal kirim pesan:", err)
+	}
 }
 
 func AttendanceIn() {
 	// send message to group
 	logrus.Info("send message to group (attendance in)")
+
+	err := whatsapp.SendText(
+		context.Background(),
+		"grup masjid lt 20",
+		"Pagi mas/mba semua, JANGAN LUPA ABSEN MASUK YA PAGI INI!",
+	)
+
+	if err != nil {
+		logrus.Error("Gagal kirim pesan ke grup:", err)
+	}
 }
 
 func AttendanceOut() {
 	// send message to group
 	logrus.Info("send message to group (attendance out)")
+
+	err := whatsapp.SendText(
+		context.Background(),
+		"grup masjid lt 20",
+		"JANGAN LUPA ABSEN KELUAR GES, UDAH SORE. Terima kasih!",
+	)
+
+	if err != nil {
+		logrus.Error("Gagal kirim pesan ke grup:", err)
+	}
 }

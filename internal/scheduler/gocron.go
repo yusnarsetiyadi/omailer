@@ -91,7 +91,7 @@ func WaitUntilWAReadyThenRun(name string, fn func()) {
 }
 
 func AutomatedMessage(mainText string) string {
-	footer := "_Automated message.\nCoffee keeps this running ☕_"
+	footer := "_Automated message._\n_Coffee keeps this running ☕_"
 	return mainText + "\n\n\n" + footer
 }
 

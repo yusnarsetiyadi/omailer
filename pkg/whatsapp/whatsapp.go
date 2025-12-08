@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -12,9 +11,7 @@ import (
 	"github.com/mdp/qrterminal/v3"
 	"github.com/sirupsen/logrus"
 	"go.mau.fi/whatsmeow"
-	waProto "go.mau.fi/whatsmeow/binary/proto"
 	"go.mau.fi/whatsmeow/store/sqlstore"
-	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	_ "modernc.org/sqlite"
 )
@@ -143,89 +140,6 @@ func ensureConnected(c *whatsmeow.Client) error {
 	}
 	if !isReady.Load() {
 		return fmt.Errorf("WhatsApp still syncing, not ready")
-	}
-
-	return nil
-}
-
-func isNumber(s string) bool {
-	for _, r := range s {
-		if r < '0' || r > '9' {
-			return false
-		}
-	}
-	return true
-}
-
-func FindGroupJIDByName(name string) (string, error) {
-	clientMu.RLock()
-	c := client
-	clientMu.RUnlock()
-
-	if c == nil {
-		return "", fmt.Errorf("WA client not initialized")
-	}
-
-	groups, err := c.GetJoinedGroups(context.Background())
-	if err != nil {
-		return "", err
-	}
-
-	for _, g := range groups {
-		if strings.EqualFold(g.Name, name) {
-			return g.JID.String(), nil
-		}
-	}
-
-	return "", fmt.Errorf("group not found")
-}
-
-func SendText(ctx context.Context, to string, message string) error {
-	clientMu.RLock()
-	c := client
-	clientMu.RUnlock()
-
-	if c == nil {
-		return fmt.Errorf("WA client not initialized")
-	}
-
-	if err := ensureConnected(c); err != nil {
-		return err
-	}
-
-	var jid types.JID
-
-	if isNumber(to) {
-		jid = types.NewJID(to, types.DefaultUserServer)
-
-	} else if strings.Contains(to, "@") {
-		parsed, err := types.ParseJID(to)
-		if err != nil {
-			return fmt.Errorf("invalid JID: %w", err)
-		}
-		jid = parsed
-
-	} else {
-		groupJID, err := FindGroupJIDByName(to)
-		if err != nil {
-			return err
-		}
-
-		parsed, err := types.ParseJID(groupJID)
-		if err != nil {
-			return fmt.Errorf("failed to parse group JID: %w", err)
-		}
-		jid = parsed
-	}
-
-	msg := &waProto.Message{
-		Conversation: &message,
-	}
-
-	_, err := c.SendMessage(ctx, jid, msg)
-	if err != nil {
-		logrus.Warnf("Failed sending message: %v", err)
-		return err
 	}
 
 	return nil

@@ -32,12 +32,11 @@ func Init() error {
 
 	dbFile := "data/session.db"
 
-	container, err := sqlstore.New(
-		context.Background(),
-		"sqlite",
-		fmt.Sprintf("file:%s?_pragma=foreign_keys%%3dON", dbFile),
-		nil,
+	dsn := fmt.Sprintf(
+		"file:%s?_pragma=foreign_keys=ON&_pragma=journal_mode=WAL&_pragma=busy_timeout=5000",
+		dbFile,
 	)
+	container, err := sqlstore.New(context.Background(), "sqlite", dsn, nil)
 	if err != nil {
 		return fmt.Errorf("failed create sqlstore: %w", err)
 	}
@@ -234,16 +233,24 @@ func SendText(ctx context.Context, to string, message string) error {
 
 func WaitUntilReady(ctx context.Context) error {
 	timeout := time.After(20 * time.Second)
-	tick := time.Tick(500 * time.Millisecond)
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
+
 		case <-timeout:
 			return fmt.Errorf("timeout waiting WhatsApp ready")
-		case <-tick:
-			if isReady.Load() && client != nil && client.IsConnected() {
+
+		case <-ticker.C:
+			clientMu.RLock()
+			c := client
+			clientMu.RUnlock()
+
+			if isReady.Load() && c != nil && c.IsConnected() {
 				return nil
 			}
 		}

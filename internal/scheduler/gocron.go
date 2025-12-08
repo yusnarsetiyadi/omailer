@@ -33,7 +33,15 @@ func InitScheduler() {
 
 	_, err = scheduler.NewJob(
 		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(17, 0, 0))),
-		gocron.NewTask(AttendanceOutWrapper),
+		gocron.NewTask(AttendanceOutWrapper, false),
+	)
+	if err != nil {
+		logrus.Errorln(err.Error())
+	}
+
+	_, err = scheduler.NewJob(
+		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(20, 0, 0))),
+		gocron.NewTask(AttendanceOutWrapper, true),
 	)
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -56,13 +64,13 @@ func AttendanceInWrapper() {
 	AttendanceIn()
 }
 
-func AttendanceOutWrapper() {
+func AttendanceOutWrapper(isNight bool) {
 	now := general.NowLocal()
 	if !isWorkday(*now) {
 		logrus.Println("Attendance OUT skipped (weekend)")
 		return
 	}
-	AttendanceOut()
+	AttendanceOut(isNight)
 }
 
 func WaitUntilWAReadyThenRun(name string, fn func()) {
@@ -88,7 +96,7 @@ func TestGoCron() {
 
 	err := whatsapp.SendText(
 		context.Background(),
-		"grup masjid lt 20",
+		"6281398447822",
 		"Cron Test: Hello from WhatsMeow!",
 	)
 
@@ -112,15 +120,24 @@ func AttendanceIn() {
 	}
 }
 
-func AttendanceOut() {
+func AttendanceOut(isNight bool) {
 	// send message to group
 	logrus.Info("send message to group (attendance out)")
 
-	err := whatsapp.SendText(
-		context.Background(),
-		"grup masjid lt 20",
-		"JANGAN LUPA ABSEN KELUAR GES, UDAH SORE. Terima kasih!",
-	)
+	var err error
+	if isNight {
+		err = whatsapp.SendText(
+			context.Background(),
+			"grup masjid lt 20",
+			"JANGAN LUPA ABSEN KELUAR GES, UDAH MALEM. Terima kasih!",
+		)
+	} else {
+		err = whatsapp.SendText(
+			context.Background(),
+			"grup masjid lt 20",
+			"JANGAN LUPA ABSEN KELUAR GES, UDAH SORE. Terima kasih!",
+		)
+	}
 
 	if err != nil {
 		logrus.Error("Gagal kirim pesan ke grup:", err)

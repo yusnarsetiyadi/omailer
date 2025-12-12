@@ -14,14 +14,7 @@ func CodeIdJob(scheduler gocron.Scheduler) {
 	// AttendanceIn
 	_, err := scheduler.NewJob(
 		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(8, 0, 0))),
-		gocron.NewTask(AttendanceInWrapper, true),
-	)
-	if err != nil {
-		logrus.Errorln(err.Error())
-	}
-	_, err = scheduler.NewJob(
-		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(11, 0, 0))),
-		gocron.NewTask(AttendanceInWrapper, false),
+		gocron.NewTask(AttendanceInWrapper),
 	)
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -30,14 +23,7 @@ func CodeIdJob(scheduler gocron.Scheduler) {
 	// AttendanceOut
 	_, err = scheduler.NewJob(
 		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(17, 0, 0))),
-		gocron.NewTask(AttendanceOutWrapper, true),
-	)
-	if err != nil {
-		logrus.Errorln(err.Error())
-	}
-	_, err = scheduler.NewJob(
-		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(20, 0, 0))),
-		gocron.NewTask(AttendanceOutWrapper, false),
+		gocron.NewTask(AttendanceOutWrapper),
 	)
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -49,65 +35,47 @@ func isWorkday(t time.Time) bool {
 	return w != time.Saturday && w != time.Sunday
 }
 
-func AttendanceInWrapper(isFirst bool) {
+func AttendanceInWrapper() {
 	now := general.NowLocal()
 	if !isWorkday(*now) {
 		logrus.Println("Attendance IN skipped (weekend)")
 		return
 	}
-	AttendanceIn(isFirst)
+	AttendanceIn()
 }
 
-func AttendanceOutWrapper(isFirst bool) {
+func AttendanceOutWrapper() {
 	now := general.NowLocal()
 	if !isWorkday(*now) {
 		logrus.Println("Attendance OUT skipped (weekend)")
 		return
 	}
-	AttendanceOut(isFirst)
+	AttendanceOut()
 }
 
-func AttendanceIn(isFirst bool) {
+func AttendanceIn() {
 	// send message to group
 	logrus.Info("send message to group (attendance in)")
 
-	var err error
-	if isFirst {
-		err = whatsapp.SendText(
-			context.Background(),
-			"grup masjid lt 20",
-			AutomatedMessage("JANGAN LUPA ABSEN MASUK YA GUYS, UDAH PAGI!"),
-		)
-	} else {
-		err = whatsapp.SendText(
-			context.Background(),
-			"grup masjid lt 20",
-			AutomatedMessage("JANGAN LUPA ABSEN MASUK YA GUYS, UDAH SIANG!"),
-		)
-	}
+	err := whatsapp.SendText(
+		context.Background(),
+		"grup masjid lt 20",
+		AutomatedMessage("JANGAN LUPA ABSEN MASUK YA GUYS, UDAH PAGI!"),
+	)
 	if err != nil {
 		logrus.Error("Gagal kirim pesan ke grup:", err)
 	}
 }
 
-func AttendanceOut(isFirst bool) {
+func AttendanceOut() {
 	// send message to group
 	logrus.Info("send message to group (attendance out)")
 
-	var err error
-	if isFirst {
-		err = whatsapp.SendText(
-			context.Background(),
-			"grup masjid lt 20",
-			AutomatedMessage("JANGAN LUPA ABSEN KELUAR YA GUYS, UDAH SORE!"),
-		)
-	} else {
-		err = whatsapp.SendText(
-			context.Background(),
-			"grup masjid lt 20",
-			AutomatedMessage("JANGAN LUPA ABSEN KELUAR YA GUYS, UDAH MALEM!"),
-		)
-	}
+	err := whatsapp.SendText(
+		context.Background(),
+		"grup masjid lt 20",
+		AutomatedMessage("JANGAN LUPA ABSEN KELUAR YA GUYS, UDAH SORE!"),
+	)
 	if err != nil {
 		logrus.Error("Gagal kirim pesan ke grup:", err)
 	}

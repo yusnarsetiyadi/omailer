@@ -53,7 +53,7 @@ func (c *ConfigMailer) SendMail(recipient, subject, bodyHtml string, files []*mu
 		c.AuthEmail,
 		c.AuthPassword,
 	)
-	dialer.SSL = true
+	dialer.SSL = false
 
 	err := dialer.DialAndSend(mailer)
 	if err != nil {

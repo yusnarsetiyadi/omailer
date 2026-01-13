@@ -22,7 +22,7 @@ func InitScheduler() {
 
 	go WaitUntilWAReadyThenRun("TestGoCron", TestGoCron)
 
-	CodeIdJob(scheduler)
+	// CodeIdJob(scheduler)
 
 	scheduler.Start()
 }

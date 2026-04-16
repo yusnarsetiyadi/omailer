@@ -19,7 +19,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @title omailer
+// @title omailer.
 // @version 1.0.0
 // @description This is a doc for omailer.
 

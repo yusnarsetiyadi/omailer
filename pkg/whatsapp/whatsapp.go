@@ -82,16 +82,28 @@ func Init() error {
 			return fmt.Errorf("failed connect: %w", err)
 		}
 
+		var paired bool
 		for evt := range qrChan {
 			if evt.Event == "code" {
 				qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
 				logrus.Info("Scan QR above using WhatsApp (Linked Devices)")
+			} else if evt == whatsmeow.QRChannelSuccess {
+				paired = true
+				logrus.Info("Device paired!")
+			} else if evt == whatsmeow.QRChannelClientOutdated {
+				return fmt.Errorf("whatsapp client version is outdated, please update the library")
+			} else if evt.Event == "error" {
+				return fmt.Errorf("QR pairing error: %v", evt.Error)
+			} else if evt == whatsmeow.QRChannelTimeout {
+				return fmt.Errorf("QR pairing timeout")
 			} else {
-				logrus.Infof("QR Event: %s", evt.Event)
+				logrus.Warnf("QR Event: %s", evt.Event)
 			}
 		}
 
-		logrus.Info("Device paired!")
+		if !paired {
+			return fmt.Errorf("device not paired, QR channel closed unexpectedly")
+		}
 	} else {
 		logrus.Info("Restoring existing WhatsApp session...")
 		err := c.Connect()

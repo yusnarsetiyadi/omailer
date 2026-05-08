@@ -1,0 +1,196 @@
+{
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a doc for omailer.",
+        "title": "omailer",
+        "contact": {},
+        "version": "1.0.0"
+    },
+    "host": "localhost:9000",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Welcome page",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Home",
+                "responses": {
+                    "200": {
+                        "description": "Welcome message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/send": {
+            "post": {
+                "description": "Send email using SMTP with optional file attachments (multipart/form-data)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Omailer"
+                ],
+                "summary": "Send email with attachments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SMTP Host",
+                        "name": "smtp_host",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "SMTP Port",
+                        "name": "smtp_port",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Auth Email",
+                        "name": "auth_email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Auth Password",
+                        "name": "auth_password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sender Name",
+                        "name": "sender_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Recipient Email",
+                        "name": "recipient",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email Subject",
+                        "name": "subject",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email Body (HTML)",
+                        "name": "body_html",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Attachment Files",
+                        "name": "files",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MetaSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.MetaError"
+                        }
+                    }
+                }
+            }
+        },
+        "/send/just-message": {
+            "get": {
+                "description": "Send email by passing URL-encoded JSON config in the `data` query parameter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Omailer"
+                ],
+                "summary": "Send email from URL-encoded JSON",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL-encoded JSON containing smtp_host, smtp_port, auth_email, auth_password, sender_name, recipient, subject, body_html",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MetaSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.MetaError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "response.MetaError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.MetaSuccess": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

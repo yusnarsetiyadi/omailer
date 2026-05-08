@@ -20,6 +20,24 @@ func NewHandler() *handler {
 	}
 }
 
+// OmailerSend
+// @Summary Send email with attachments
+// @Description Send email using SMTP with optional file attachments (multipart/form-data)
+// @Tags Omailer
+// @Accept mpfd
+// @Produce json
+// @Param smtp_host formData string true "SMTP Host"
+// @Param smtp_port formData string true "SMTP Port"
+// @Param auth_email formData string true "Auth Email"
+// @Param auth_password formData string true "Auth Password"
+// @Param sender_name formData string true "Sender Name"
+// @Param recipient formData string true "Recipient Email"
+// @Param subject formData string true "Email Subject"
+// @Param body_html formData string true "Email Body (HTML)"
+// @Param files formData file false "Attachment Files"
+// @Success 200 {object} response.MetaSuccess
+// @Failure 400 {object} response.MetaError
+// @Router /send [post]
 func (h *handler) OmailerSend(c echo.Context) (err error) {
 	payload := new(dto.OmailerSend)
 	if err = c.Bind(payload); err != nil {
@@ -43,6 +61,16 @@ func (h *handler) OmailerSend(c echo.Context) (err error) {
 	return response.SuccessResponse(data).SendSuccess(c)
 }
 
+// OmailerSendJustMessage
+// @Summary Send email from URL-encoded JSON
+// @Description Send email by passing URL-encoded JSON config in the `data` query parameter
+// @Tags Omailer
+// @Accept json
+// @Produce json
+// @Param data query string true "URL-encoded JSON containing smtp_host, smtp_port, auth_email, auth_password, sender_name, recipient, subject, body_html"
+// @Success 200 {object} response.MetaSuccess
+// @Failure 400 {object} response.MetaError
+// @Router /send/just-message [get]
 func (h *handler) OmailerSendJustMessage(c echo.Context) (err error) {
 	payload := new(dto.OmailerSendJustMessage)
 	if err = c.Bind(payload); err != nil {

@@ -19,9 +19,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @title omailer.
+// @title omailer
 // @version 1.0.0
 // @description This is a doc for omailer.
+// @host localhost:9000
+// @BasePath /
+// @accept json
+// @produce json
 
 func main() {
 

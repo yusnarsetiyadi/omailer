@@ -1,0 +1,134 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  response.MetaError:
+    properties:
+      code:
+        type: integer
+      data: {}
+      success:
+        type: boolean
+    type: object
+  response.MetaSuccess:
+    properties:
+      code:
+        type: integer
+      data: {}
+      success:
+        type: boolean
+    type: object
+host: localhost:9000
+info:
+  contact: {}
+  description: This is a doc for omailer.
+  title: omailer
+  version: 1.0.0
+paths:
+  /:
+    get:
+      description: Welcome page
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Welcome message
+          schema:
+            type: string
+      summary: Home
+      tags:
+      - System
+  /send:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Send email using SMTP with optional file attachments (multipart/form-data)
+      parameters:
+      - description: SMTP Host
+        in: formData
+        name: smtp_host
+        required: true
+        type: string
+      - description: SMTP Port
+        in: formData
+        name: smtp_port
+        required: true
+        type: string
+      - description: Auth Email
+        in: formData
+        name: auth_email
+        required: true
+        type: string
+      - description: Auth Password
+        in: formData
+        name: auth_password
+        required: true
+        type: string
+      - description: Sender Name
+        in: formData
+        name: sender_name
+        required: true
+        type: string
+      - description: Recipient Email
+        in: formData
+        name: recipient
+        required: true
+        type: string
+      - description: Email Subject
+        in: formData
+        name: subject
+        required: true
+        type: string
+      - description: Email Body (HTML)
+        in: formData
+        name: body_html
+        required: true
+        type: string
+      - description: Attachment Files
+        in: formData
+        name: files
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MetaSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.MetaError'
+      summary: Send email with attachments
+      tags:
+      - Omailer
+  /send/just-message:
+    get:
+      consumes:
+      - application/json
+      description: Send email by passing URL-encoded JSON config in the `data` query
+        parameter
+      parameters:
+      - description: URL-encoded JSON containing smtp_host, smtp_port, auth_email,
+          auth_password, sender_name, recipient, subject, body_html
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MetaSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.MetaError'
+      summary: Send email from URL-encoded JSON
+      tags:
+      - Omailer
+produces:
+- application/json
+swagger: "2.0"

@@ -18,7 +18,7 @@ definitions:
       success:
         type: boolean
     type: object
-host: localhost:9000
+host: https://yusnar.my.id/omailer
 info:
   contact: {}
   description: This is a doc for omailer.

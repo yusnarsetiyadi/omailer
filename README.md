@@ -68,7 +68,7 @@ docker run -p 9000:9000 omailer
 ### `POST /send` — Send email with attachments (multipart/form-data)
 
 ```bash
-curl -X POST http://localhost:9000/send \
+curl -X POST https://yusnar.my.id/omailer/send \
   -F "smtp_host=smtp.gmail.com" \
   -F "smtp_port=587" \
   -F "auth_email=you@gmail.com" \
@@ -96,7 +96,7 @@ curl -X POST http://localhost:9000/send \
 ### `GET /send/just-message` — Send email via URL-encoded JSON
 
 ```bash
-curl "http://localhost:9000/send/just-message?data=%7B%22smtp_host%22%3A%22smtp.gmail.com%22%2C%22...%22%7D"
+curl "https://yusnar.my.id/omailer/send/just-message?data=%7B%22smtp_host%22%3A%22smtp.gmail.com%22%2C%22...%22%7D"
 ```
 
 The `data` query parameter must be a URL-encoded JSON string with the same fields as above.

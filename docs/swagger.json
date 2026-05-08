@@ -12,7 +12,7 @@
         "contact": {},
         "version": "1.0.0"
     },
-    "host": "localhost:9000",
+    "host": "https://yusnar.my.id/omailer",
     "basePath": "/",
     "paths": {
         "/": {

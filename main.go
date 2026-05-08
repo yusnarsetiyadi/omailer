@@ -22,7 +22,7 @@ import (
 // @title omailer
 // @version 1.0.0
 // @description This is a doc for omailer.
-// @host localhost:9000
+// @host https://yusnar.my.id/omailer
 // @BasePath /
 // @accept json
 // @produce json

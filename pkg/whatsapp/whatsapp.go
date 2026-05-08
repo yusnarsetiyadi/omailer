@@ -100,6 +100,11 @@ func Init() error {
 		}
 	}
 
+	logrus.Info("Waiting for WhatsApp client to be fully ready...")
+	if err := waitReadyAfterConnect(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -165,6 +170,23 @@ func WaitUntilReady(ctx context.Context) error {
 			clientMu.RUnlock()
 
 			if isReady.Load() && c != nil && c.IsConnected() {
+				return nil
+			}
+		}
+	}
+}
+
+func waitReadyAfterConnect() error {
+	timeout := time.After(15 * time.Second)
+	ticker := time.NewTicker(200 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-timeout:
+			return fmt.Errorf("timeout waiting WhatsApp ready after connect")
+		case <-ticker.C:
+			if isReady.Load() {
 				return nil
 			}
 		}

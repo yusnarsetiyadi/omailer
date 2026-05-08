@@ -3,7 +3,7 @@
 > **O**pen **Mailer** — Multi-purpose notification bridge for email.
 <!-- > **O**rganization **Mailer** — Multi-purpose notification bridge for email & WhatsApp. -->
 
-[![Go Version](https://img.shields.io/badge/Go-1.24.3-00ADD8?logo=go)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/Go-1.25.0-00ADD8?logo=go)](https://go.dev/)
 [![Echo v4](https://img.shields.io/badge/Echo-v4-4DB33D?logo=go)](https://echo.labstack.com/)
 [![License](https://img.shields.io/badge/license-MIT-green)](#)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker)](https://www.docker.com/)
@@ -26,7 +26,7 @@
 
 | Category | Technology |
 |---|---|
-| **Language** | Go 1.24.3 |
+| **Language** | Go 1.25.0 |
 | **HTTP Framework** | [Echo v4](https://echo.labstack.com/) |
 | **Email** | [gomail v2](https://gopkg.in/gomail.v2) |
 | **Database** | SQLite (WhatsApp session storage) |
@@ -41,7 +41,7 @@
 ## Quick Start
 
 ### Prerequisites
-- Go 1.24+
+- Go 1.25+
 - Docker (optional)
 
 ### Run Locally

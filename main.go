@@ -5,7 +5,6 @@ import (
 	"net/http"
 	httpomailer "omailer/internal/http"
 	middlewareEcho "omailer/internal/middleware"
-	"omailer/internal/scheduler"
 	"omailer/pkg/constant"
 	"omailer/pkg/log"
 	"omailer/pkg/whatsapp"
@@ -45,10 +44,10 @@ func main() {
 	defer cancel()
 
 	// whatsapp & scheduler
-	if err := whatsapp.Init(); err != nil {
-		logrus.Fatalf("Failed to init WhatsApp client: %v", err)
-	}
-	scheduler.InitScheduler()
+	// if err := whatsapp.Init(); err != nil {
+	// 	logrus.Fatalf("Failed to init WhatsApp client: %v", err)
+	// }
+	// scheduler.InitScheduler()
 
 	go func() {
 		addr := ":" + strconv.Itoa(constant.PORT)
